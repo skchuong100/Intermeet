@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.google.firebase.database.*
@@ -28,6 +30,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var ivUserProfilePhoto: ImageView
     private lateinit var tvUserFirstName: TextView
+    private lateinit var nestedNavController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +50,7 @@ class ProfileFragment : Fragment() {
         val userId = "knIJTTeOHsa3ce4L84dbE7BUYQI2"
         val database = Firebase.database
         val userRef = database.getReference("users").child(userId)
+        setupNestedNavHost()
 
         // ValueEventListener to read the "firstName" and "photoDownloadURLs" data
         userRef.addValueEventListener(object : ValueEventListener {
@@ -79,11 +83,17 @@ class ProfileFragment : Fragment() {
             }
         })
 
+        //val settingsButton: Button = view.findViewById(R.id.settingButton)
+        //settingsButton.setOnClickListener {
+            // Start an Intent to open the SettingsActivity
+        //    val intent = Intent(activity, SettingsActivity::class.java)
+        //    startActivity(intent)
+        //}
         val settingsButton: Button = view.findViewById(R.id.settingButton)
         settingsButton.setOnClickListener {
-            // Start an Intent to open the SettingsActivity
-            val intent = Intent(activity, SettingsActivity::class.java)
-            startActivity(intent)
+            view.findViewById<View>(R.id.main_content).visibility = View.GONE
+            view.findViewById<View>(R.id.nested_nav_host_fragment).visibility = View.VISIBLE
+            nestedNavController.navigate(R.id.settingsFragment)
         }
         val editPreference : Button = view.findViewById(R.id.preferenceButton)
         editPreference.setOnClickListener {
@@ -95,10 +105,9 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun navigateToSettings() {
-        // Implementation depends on your navigation setup.
-        // This could be using findNavController().navigate() if using Navigation Component
-        // or activity supportFragmentManager for manual transactions
+    private fun setupNestedNavHost() {
+        val navHostFragment = childFragmentManager.findFragmentById(R.id.nested_nav_host_fragment) as NavHostFragment
+        nestedNavController = navHostFragment.navController
     }
 
     private fun calculateAge(birthday: String?): Int {
