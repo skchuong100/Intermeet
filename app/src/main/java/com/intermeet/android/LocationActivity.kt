@@ -31,6 +31,7 @@ class LocationActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
+
         super.onResume()
         checkPermissionAndGetLocation() // Check permissions every time the activity resumes
     }
