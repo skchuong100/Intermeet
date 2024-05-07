@@ -2,6 +2,7 @@ package com.intermeet.android
 
 import android.content.ContentValues.TAG
 import android.os.Build
+import androidx.lifecycle.LiveData
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
@@ -35,12 +36,14 @@ class DiscoverViewModel : ViewModel() {
 
 
     fun fetchUserData(userId: String) {
+        Log.d("DiscoverViewModel", "Fetching user data for ID: $userId")
         viewModelScope.launch {
             val dbRef = FirebaseDatabase.getInstance().getReference("users/$userId")
             dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val user = snapshot.getValue(UserDataModel::class.java)
                     _userData.postValue(user)
+                    Log.d("DiscoverViewModel", "User data fetched for ID: $userId")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -199,7 +202,7 @@ class DiscoverViewModel : ViewModel() {
             }
         }
     }
-    
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun userMeetsPreferences(user: UserDataModel, currentUser: UserDataModel): Boolean {
 

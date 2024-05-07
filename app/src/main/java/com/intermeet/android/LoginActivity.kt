@@ -3,6 +3,7 @@ package com.intermeet.android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -49,27 +50,28 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun logIn(email: String, password: String) {
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success
-                    val user = auth.currentUser
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user
-                    Toast.makeText(
-                        baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    updateUI(null)
+        try {
+            Log.d("LoginActivity", "Attempting to log in with email: $email")
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        updateUI(null)
+                    }
                 }
+            } else {
+                Toast.makeText(this, "Invalid Email and Password.", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "Invalid Email and Password.", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error during login: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun updateUI(user: FirebaseUser?) {
+        Log.d("LoginActivity", "Updating UI, user is ${if (user == null) "null" else "not null"}")
         if (user != null) {
             // User is signed in
             val intent = Intent(this, MainActivity::class.java) // sends to MainActivity.js

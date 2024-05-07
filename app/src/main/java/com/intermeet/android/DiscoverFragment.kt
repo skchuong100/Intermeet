@@ -37,20 +37,22 @@ class DiscoverFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        Log.d("DiscoverFragment", "onCreateView")
         return inflater.inflate(R.layout.fragment_discover, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.d("DiscoverFragment", "onViewCreated")
         setupViews(view)
         setupListeners()
         setupCardStackView()
         addLikeAnimationFragment()
         addPassAnimationFragment()
 
-        viewModel.filteredUsers.observe(viewLifecycleOwner) { users ->
+        viewModel.filteredUsers.observe(viewLifecycleOwner) { users: List<UserDataModel> ->
+            Log.d("DiscoverFragment", "Observed filteredUsers: ${users.size} users")
             progressBar.visibility = View.GONE
             if (users.isNotEmpty()) {
                 updateAdapter(users)
@@ -63,7 +65,7 @@ class DiscoverFragment : Fragment() {
     }
 
 
-private fun setupViews(view: View) {
+    private fun setupViews(view: View) {
         cardStackView = view.findViewById(R.id.usersCardStackView)
         noUsersTextView = view.findViewById(R.id.tvNoUsers)
         btnRefresh = view.findViewById(R.id.btnRefresh)
@@ -113,6 +115,7 @@ private fun setupViews(view: View) {
     }
 
     private fun setupCardStackView() {
+        Log.d("DiscoverFragment", "CardStackView setup completed")
         val manager = CardStackLayoutManager(context, object : CardStackListener {
             override fun onCardDragging(direction: Direction, ratio: Float) {
             }
@@ -154,6 +157,7 @@ private fun setupViews(view: View) {
 
 
     private fun triggerLikeAnimation() {
+        Log.d("DiscoverFragment", "Like animation fragment added")
         val likeAnimationFragment =
             childFragmentManager.findFragmentByTag("LikeAnimationFragment") as? LikeAnimation
         likeAnimationFragment?.let {
@@ -164,6 +168,7 @@ private fun setupViews(view: View) {
     }
 
     private fun addLikeAnimationFragment() {
+        Log.d("DiscoverFragment", "Pass animation fragment added")
         val transaction = childFragmentManager.beginTransaction()
         val likeFragment = LikeAnimation()
         transaction.add(R.id.like_animation_container, likeFragment, "LikeAnimationFragment")
